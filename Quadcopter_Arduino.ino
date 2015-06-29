@@ -3,6 +3,7 @@
 
 #define DEBUG 1
 
+#define LED_PIN 15
 #define MOTOR1 1
 #define MOTOR2 2
 #define MOTOR3 3
@@ -40,6 +41,7 @@ void setup(){
 	Serial.begin(BAUD0);	//DEBUG PC
 	Serial1.begin(BAUD1);	//RAZOR IMU
 	Serial2.begin(BAUD2);	//WIFI SHIELD
+	//pinmode(LED_PIN, Output)
 
 	initWIFI();
 
