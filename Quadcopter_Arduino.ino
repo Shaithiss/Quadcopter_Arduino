@@ -19,6 +19,10 @@ Servo Motor4;
 
 int x_read, y_read, z_read;
 int t_m1, t_m2, t_m3, t_m4;
+int lasttime;
+int blinkcounter, ledblinknum, ledblinkfreq;
+
+bool ledblinking;
 
 uint16_t x_accel, y_accel, z_accel;
 uint16_t x_gyro, y_gyro, z_gyro;
@@ -47,6 +51,15 @@ void setup(){
 
 	Serial.println("Init DONE");
 }
+
+void LedBlink(int count, int freq){
+LED_blinking = true; 
+ledblinkcounter = 0; 
+ledblinknum = count;
+ledblinkfreq = freq;
+}
+
+
 
 String GetWIFISetupString(){
 	String result = "AT+CWSAP=\"";
@@ -87,6 +100,7 @@ void initWIFI(){
 		delay(20);
 	}
 	Serial.println("WIFI done");
+LedBlink(4, 500);
 }
 
 void get9DOFData(String data){
@@ -204,6 +218,7 @@ void wifiSendDATA(String s){
 }
 
 void loop(){
+uint now = millis();
 
 	SetZero();
 	//Razor IMU
@@ -249,4 +264,9 @@ void loop(){
 	Motor3.write(t_m3);
 	Motor4.write(t_m4);
 
+If(ledblinking && ledblinkcounter < ledblinknum){
+If(now > lasttime + ledblinkfreq){ lasttime = now;
+digitalwrite(LED_PIN, !digitalread(LED_PIN);
+ledblinkcounter++; 
+}else if(ledblinkcounter >= 10){ ledblinkcounter = 0; ledblinking = false;}
 }
