@@ -1,5 +1,7 @@
 #include <Servo/Servo.h>
-#include <String.h>
+
+#typedef char* String
+#define SIZE(A) ((A) / sizeof(A[0]))
 
 #define DEBUG 1
 
@@ -11,6 +13,8 @@
 #define BAUD0 9600
 #define BAUD1 57600
 #define BAUD2 9600
+
+char tochar(int i) {return (char)(i + 48);}
 
 Servo Motor1;
 Servo Motor2;
@@ -53,16 +57,24 @@ void setup(){
 }
 
 void LedBlink(int count, int freq){
-LED_blinking = true; 
-ledblinkcounter = 0; 
-ledblinknum = count;
-ledblinkfreq = freq;
+	LED_blinking = true; 
+	ledblinkcounter = 0; 
+	ledblinknum = count;
+	ledblinkfreq = freq;
 }
 
 
 
-String GetWIFISetupString(){
+String GetWIFISetupString();
 	String result = "AT+CWSAP=\"";
+	strcat(result, WIFI_SSID);
+	strcat(result, "\",\"");
+	strcat(result, WIFI_PW);
+	strcat(result, "\",");
+	strcat(result, WIFI_CHANNEL);
+	strcat(result, ",");
+	strcat(result, WIFI_SECURITY);
+	/*
 	result += WIFI_SSID;
 	result += "\",\"";
 	result += WIFI_PW;
@@ -70,6 +82,7 @@ String GetWIFISetupString(){
 	result += WIFI_CHANNEL;
 	result += ",";
 	result += WIFI_SECURITY;
+	*/
 	return result;
 }
 
@@ -109,8 +122,7 @@ void get9DOFData(String data){
 	}
 	char * del = ",$#";
 	char * str;
-	data.toCharArray(str, data.length(), 0);
-	str = strtok(str, del);
+	str = strtok(data, del);
 	x_accel = atoi(str);
 	str = strtok(NULL, del);
 	y_accel = atoi(str);
@@ -207,13 +219,15 @@ void wifiSend(String s){
 }
 
 void wifiSendDATA(String s){
-	if (s.length() >0) {
-		s += "\r";
+	if (SIZE(s) >0) {
+		strcat(s, "\r");
+		//s += "\r";
 		String sendCMD;
 		sendCMD = "AT+CIPSEND=";
-		sendCMD += s.length();
+		sendCMD += tochar(SIZE(s));
 		Serial2.print(sendCMD);
 		s = "";
+		//TODO: Wie müssen die Daten gesendet werden?
 	}
 }
 
@@ -265,8 +279,13 @@ uint now = millis();
 	Motor4.write(t_m4);
 
 If(ledblinking && ledblinkcounter < ledblinknum){
-If(now > lasttime + ledblinkfreq){ lasttime = now;
-digitalwrite(LED_PIN, !digitalread(LED_PIN);
-ledblinkcounter++; 
-}else if(ledblinkcounter >= 10){ ledblinkcounter = 0; ledblinking = false;}
+	If(now > lasttime + ledblinkfreq){ 
+		lasttime = now;
+		digitalwrite(LED_PIN, !digitalread(LED_PIN));
+		ledblinkcounter++; 
+	}
+	else if(ledblinkcounter >= 10){ 
+		ledblinkcounter = 0; 
+		ledblinking = false;
+	}
 }
