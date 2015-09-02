@@ -52,8 +52,9 @@ void setup(){
 	//pinmode(LED_PIN, Output)
 
 	initWIFI();
-
+#if DEBUG
 	Serial.println("Init DONE");
+#endif
 }
 
 void LedBlink(int count, int freq){
@@ -88,7 +89,9 @@ String GetWIFISetupString();
 
 void initWIFI(){
 	bool result = true;
+#if DEBUG
 	Serial.println("start wifi");
+#endif 
 	wifiSend("AT");
 	while (!Serial2.find("OK")){
 		SerialFlush(2);
@@ -112,8 +115,10 @@ void initWIFI(){
 		SerialFlush(2);
 		delay(20);
 	}
+#if DEBUG
 	Serial.println("WIFI done");
-LedBlink(4, 500);
+#endif
+	LedBlink(4, 500);
 }
 
 void get9DOFData(String data){
@@ -278,14 +283,14 @@ uint now = millis();
 	Motor3.write(t_m3);
 	Motor4.write(t_m4);
 
-If(ledblinking && ledblinkcounter < ledblinknum){
-	If(now > lasttime + ledblinkfreq){ 
-		lasttime = now;
-		digitalwrite(LED_PIN, !digitalread(LED_PIN));
-		ledblinkcounter++; 
-	}
-	else if(ledblinkcounter >= 10){ 
-		ledblinkcounter = 0; 
-		ledblinking = false;
+	if(ledblinking && (ledblinkcounter < ledblinknum)){
+		if(now > lasttime + ledblinkfreq){ 
+			lasttime = now;
+			digitalwrite(LED_PIN, !digitalread(LED_PIN));
+			ledblinkcounter++; 
+		}
+		else if(ledblinkcounter >= 10){ 
+			ledblinkcounter = 0; 
+			ledblinking = false;
 	}
 }
