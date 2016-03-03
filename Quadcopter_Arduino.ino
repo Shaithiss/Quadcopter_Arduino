@@ -1,16 +1,31 @@
 #include <Servo/Servo.h>
 #include <String.h>
 
-#define DEBUG 1
+#define DEBUG_ENABLED 1
 
 #define LED_PIN 15
 #define MOTOR1 1
 #define MOTOR2 2
 #define MOTOR3 3
 #define MOTOR4 4
-#define BAUD0 9600
-#define BAUD1 57600
-#define BAUD2 9600
+
+#define SERIAL_DEBUG 0
+#define SERIAL_DOF 1
+#define SERIAL_WIFI 2
+
+#define SERIAL_DEBUG_BAUD 9600
+#define SERIAL_DOF_BAUD 115200 //57600
+#define SERIAL_WIFI_BAUD 9600
+
+void get9DOFData(String data);
+String GetWIFISetupString();
+void initWIFI();
+void LedBlink(int count, int freq);
+String readSerial(int i);
+void SerialFlush(int i);
+void SetZero();
+void wifiSend(String s);
+void wifiSendDATA(String s);
 
 Servo Motor1;
 Servo Motor2;
@@ -20,16 +35,23 @@ Servo Motor4;
 int x_read, y_read, z_read;
 int t_m1, t_m2, t_m3, t_m4;
 int lasttime;
-int blinkcounter, ledblinknum, ledblinkfreq;
+int ledblinkcounter, ledblinknum, ledblinkfreq;
 
-bool ledblinking;
+bool LED_blinking;
 
 uint16_t x_accel, y_accel, z_accel;
 uint16_t x_gyro, y_gyro, z_gyro;
 uint16_t x_mag, y_mag, z_mag;
 
+char WIFI_Net[30];
+char WIFI_IP_Adress[20];
+
 String DOFRead;
 String WIFIRead;
+
+HardwareSerial Serial_DEBUG = Serial;
+HardwareSerial Serial_DOF = Serial1;
+HardwareSerial Serial_WIFI = Serial2;
 
 String WIFI_SSID = "ESP8266";
 String WIFI_PW = "12345678";
@@ -37,19 +59,22 @@ String WIFI_CHANNEL = "1";
 String WIFI_SECURITY = "3";
 
 void setup(){
-
+	/*
 	Motor1.attach(MOTOR1);
 	Motor2.attach(MOTOR2);
 	Motor3.attach(MOTOR3);
 	Motor4.attach(MOTOR4);
-	Serial.begin(BAUD0);	//DEBUG PC
-	Serial1.begin(BAUD1);	//RAZOR IMU
-	Serial2.begin(BAUD2);	//WIFI SHIELD
+	*/
+	if (DEBUG_ENABLED) {
+		Serial_DEBUG.begin(SERIAL_DEBUG_BAUD);	//DEBUG PC
+	}
+	Serial_DOF.begin(SERIAL_DOF_BAUD);	//RAZOR IMU
+	Serial_WIFI.begin(SERIAL_WIFI_BAUD);	//WIFI SHIELD
 	//pinmode(LED_PIN, Output)
 
 	initWIFI();
 
-	Serial.println("Init DONE");
+	Serial_DEBUG.println("Init DONE");
 }
 
 void LedBlink(int count, int freq){
@@ -59,47 +84,72 @@ ledblinknum = count;
 ledblinkfreq = freq;
 }
 
-
-
-String GetWIFISetupString(){
-	String result = "AT+CWSAP=\"";
-	result += WIFI_SSID;
-	result += "\",\"";
-	result += WIFI_PW;
-	result += "\",";
-	result += WIFI_CHANNEL;
-	result += ",";
-	result += WIFI_SECURITY;
-	return result;
+int WaitForWIFIResponse(){
+	int i = 0;
+	delay(20);
+	if (!Serial_WIFI.find("OK") && !Serial_WIFI.find("ready")) {
+		i++;
+		Serial_DEBUG.println("Error");
+	}
+	SerialFlush(SERIAL_WIFI);
+	SerialFlush(SERIAL_DEBUG);
+	return i;
 }
 
 void initWIFI(){
-	bool result = true;
-	Serial.println("start wifi");
+	int result = 0;
+	Serial_DEBUG.println("start wifi");
 	wifiSend("AT");
-	while (!Serial2.find("OK")){
-		SerialFlush(2);
-		delay(20);
+	result += WaitForWIFIResponse();
+
+	wifiSend("AT+CIPMUX=1");
+	result += WaitForWIFIResponse();
+
+	wifiSend("AT+CIPSERVER=1,80");
+	result += WaitForWIFIResponse();
+
+	wifiSend("AT+CIPSTO=0");
+	result += WaitForWIFIResponse();
+	
+	wifiSend("AT+CWMODE=2");
+	SerialFlush(SERIAL_WIFI);
+
+	String WIFI_AP_SETUP = "AT+CWSAP=\"" + WIFI_SSID + "\",\"" + WIFI_PW + "\"," + WIFI_CHANNEL + "," + WIFI_SECURITY;
+
+	wifiSend(WIFI_AP_SETUP);
+	result += WaitForWIFIResponse();
+	delay(1000);
+
+	wifiSend("AT+CWSAP?");
+	delay(10);
+
+	byte len = 0;
+	WIFI_Net[0] = 0;
+	if (Serial_WIFI.find("AT+CWSAP?\r\r\n+CWSAP:\"")) {
+		len = Serial_WIFI.readBytesUntil('\"', WIFI_Net, 20);
+		WIFI_Net[len] = 0;
 	}
-	wifiSend("AT+RST");
-	while (!Serial2.find("ready")){
-		SerialFlush(2);
-		delay(20);
+
+	wifiSend("AT+CIFSR");
+	delay(1000);
+
+	len = 0;
+	WIFI_IP_Adress[0] = 0;
+	if (Serial_WIFI.find("AT+CIFSR\r\r\n")) {
+		len = Serial_WIFI.readBytesUntil('\r', WIFI_IP_Adress, 20);
+		WIFI_IP_Adress[len] = 0;
 	}
-	wifiSend("AT+CWMODE=3");
-	delay(200);
-	SerialFlush(2);
-	wifiSend(GetWIFISetupString());
-	while (!Serial2.find("OK")){
-		SerialFlush(2);
-		delay(20);
-	}
-	wifiSend("AT+RST");
-	while (!Serial2.find("ready")){
-		SerialFlush(2);
-		delay(20);
-	}
-	Serial.println("WIFI done");
+	
+#if DEBUG_ENABLED
+	Serial_DEBUG.println("--------------------------");
+	Serial_DEBUG.print("WIFI done with ");
+	Serial_DEBUG.print(result);
+	Serial_DEBUG.println(" Errors");
+	Serial_DEBUG.print("Netzwerk: ");
+	Serial_DEBUG.println(WIFI_Net);
+	Serial_DEBUG.print("IP: ");
+	Serial_DEBUG.println(WIFI_IP_Adress);
+#endif
 LedBlink(4, 500);
 }
 
@@ -143,28 +193,13 @@ void SetZero(){
 }
 
 void SerialFlush(int i){
-	char c;
-	if (i == 0){
-		while (Serial.available()) {
-			if (Serial.available() >0) {
-				c = Serial1.read();
-			}
-		}
-	}
-	if (i == 1){
-		while (Serial1.available()) {
-			if (Serial1.available() >0) {
-				c = Serial1.read();
-			}
-		}
-	}
-	else if (i == 2){
-		Serial2.flush();
-		while (Serial2.available()) {
-			if (Serial2.available() >0) {
-				c = Serial2.read();
-			}
-		}
+	switch (i)
+	{
+		case 0: while (Serial_DEBUG.available()) { Serial_DEBUG.read(); } break;
+		case 1: while (Serial_DOF.available()) { Serial_DOF.read(); } break;
+		case 2: while (Serial_WIFI.available()) { Serial_WIFI.read(); } break;
+		default:
+			break;
 	}
 }
 
@@ -173,10 +208,10 @@ String readSerial(int i){
 	char c;
 	String readString = "";
 	String result = "";
-	if (i == 1){
-		while (Serial1.available()) {
-			if (Serial1.available() >0) {
-				c = Serial1.read();
+	if (i == SERIAL_WIFI){
+		while (Serial_WIFI.available()) {
+			if (Serial_WIFI.available() >0) {
+				c = Serial_WIFI.read();
 				readString += c;
 			}
 		}
@@ -185,10 +220,10 @@ String readSerial(int i){
 			readString = "";
 		}
 	}
-	else if (i == 2){
-		while (Serial2.available()) {
-			if (Serial2.available() >0) {
-				c = Serial2.read();
+	else if (i == SERIAL_DOF){
+		while (Serial_DOF.available()) {
+			if (Serial_DOF.available() >0) {
+				c = Serial_DOF.read();
 				readString += c;
 			}
 		}
@@ -202,7 +237,10 @@ String readSerial(int i){
 
 void wifiSend(String s){
 	if (s.length() > 0){
-		Serial2.println(s);
+#if DEBUG_ENABLED
+		Serial_DEBUG.println(s);
+#endif
+		Serial_WIFI.println(s);
 	}
 }
 
@@ -212,48 +250,45 @@ void wifiSendDATA(String s){
 		String sendCMD;
 		sendCMD = "AT+CIPSEND=";
 		sendCMD += s.length();
-		Serial2.print(sendCMD);
-		s = "";
+		sendCMD += " " + s;
+		wifiSend(sendCMD);
 	}
 }
 
 void loop(){
-uint now = millis();
+	unsigned int now = millis();
 
 	SetZero();
-	//Razor IMU
-	if (Serial1.available()){
-		DOFRead = readSerial(1);
+	//Razor IMU 9DOF
+	if (Serial_DOF.available()){
+		DOFRead = readSerial(SERIAL_DOF);
 		get9DOFData(DOFRead);
 	}
-	if (Serial2.available()){
-		WIFIRead = readSerial(2);
+	//ESP8266
+	if (Serial_WIFI.available()){
+		WIFIRead = readSerial(SERIAL_WIFI);
 	}
 
-#if DEBUG
+#if DEBUG_ENABLED
 	if (DOFRead.length() > 0 || WIFIRead.length() > 0){
-		Serial.println("----DOF----");
-		Serial.println(DOFRead);
-		Serial.println("----WIFI----");
-		Serial.println(WIFIRead);
-		Serial.print('\n');
+		Serial_DEBUG.println("----DOF----");
+		Serial_DEBUG.println(DOFRead);
+		Serial_DEBUG.println("----WIFI----");
+		Serial_DEBUG.println(WIFIRead);
+		Serial_DEBUG.print('\n');
 	}
 
-	if (Serial.available()){
+	if (Serial_DEBUG.available()){
 		String s = "";
 		char c;
 		delay(200);
-		while (Serial.available()) {
-			if (Serial.available() > 0) {
-				c = Serial.read();
+		while (Serial_DEBUG.available()) {
+			if (Serial_DEBUG.available() > 0) {
+				c = Serial_DEBUG.read();
 				if (c != '\n')
 					s += c;
 			}
 		}
-		Serial.println("to WIFI");
-		Serial.println(s);
-		Serial.println(s.length());
-		Serial.println("--------");
 		wifiSend(s);
 
 	}
@@ -264,9 +299,16 @@ uint now = millis();
 	Motor3.write(t_m3);
 	Motor4.write(t_m4);
 
-If(ledblinking && ledblinkcounter < ledblinknum){
-If(now > lasttime + ledblinkfreq){ lasttime = now;
-digitalwrite(LED_PIN, !digitalread(LED_PIN);
-ledblinkcounter++; 
-}else if(ledblinkcounter >= 10){ ledblinkcounter = 0; ledblinking = false;}
+	if (LED_blinking && ledblinkcounter < ledblinknum){
+		if (now > lasttime + ledblinkfreq){
+			lasttime = now;
+			digitalWrite(LED_PIN, !digitalRead(LED_PIN));
+			ledblinkcounter++;
+		}
+		else if (ledblinkcounter >= 10){
+			ledblinkcounter = 0;
+			LED_blinking = false;
+		}
+
+	}
 }
