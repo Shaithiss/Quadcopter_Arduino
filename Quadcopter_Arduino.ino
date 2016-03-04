@@ -2,6 +2,7 @@
 #include <String.h>
 
 #define DEBUG_ENABLED 1
+#define WIFI_SETUP_ENABLED 0
 
 #define LED_PIN 15
 #define MOTOR1 1
@@ -65,15 +66,16 @@ void setup(){
 	Motor3.attach(MOTOR3);
 	Motor4.attach(MOTOR4);
 	*/
-	if (DEBUG_ENABLED) {
-		Serial_DEBUG.begin(SERIAL_DEBUG_BAUD);	//DEBUG PC
-	}
+#if DEBUG_ENABLED
+	Serial_DEBUG.begin(SERIAL_DEBUG_BAUD);	//DEBUG PC
+#endif
 	Serial_DOF.begin(SERIAL_DOF_BAUD);	//RAZOR IMU
 	Serial_WIFI.begin(SERIAL_WIFI_BAUD);	//WIFI SHIELD
-	//pinmode(LED_PIN, Output)
-
+	pinmode(LED_PIN, Output)
+#if WIFI_SETUP_ENABLED
 	initWIFI();
-
+#endif
+	wifiSend("AT");
 	Serial_DEBUG.println("Init DONE");
 }
 
@@ -150,7 +152,6 @@ void initWIFI(){
 	Serial_DEBUG.print("IP: ");
 	Serial_DEBUG.println(WIFI_IP_Adress);
 #endif
-LedBlink(4, 500);
 }
 
 void get9DOFData(String data){
@@ -267,6 +268,14 @@ void loop(){
 	//ESP8266
 	if (Serial_WIFI.available()){
 		WIFIRead = readSerial(SERIAL_WIFI);
+	}
+	if(WIFIRead.findlast("+IPD")){
+		if(WIFIRead.findlast("LED1")){
+			digitalwrite(LED_PIN, HIGH);
+		}
+		else if(WIFIRead.findlast("LED0")){
+			digitalWrite(LED_PIN, LOW);
+		}
 	}
 
 #if DEBUG_ENABLED
