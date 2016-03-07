@@ -1,92 +1,86 @@
 #include <V3.h>
 #include <math.h>
-float x, y, z;
 
-public V3(float x, float y, float z){
-  this.x = x;
-  this.y = y;
-  this.z = z;
-}
-public V3 Add_V3 (V3 other){
+public V3 V3_Add_V3 (V3 A, V3 B){
   V3 result;
-  result.x = this.x + other.x;
-  result.y = this.y + other.y;
-  result.z = this.z + other.z;
+  result.x = A.x + B.x;
+  result.y = A.y + B.y;
+  result.z = A.z + B.z;
   return result:
 }
 
-public V3 Add_Scalar (float other){
+public V3 V3_Add_Scalar (V3 A, float B){
   V3 result;
-  result.x = this.x + other;
-  result.y = this.y + other;
-  result.z = this.z + other;
+  result.x = A.x + B;
+  result.y = A.y + B;
+  result.z = A.z + B;
   return result:
 }
 
-public V3 Sub_V3 (V3 other){
+public V3 V3_Sub_V3 (V3 A, V3 B){
   V3 result;
-  result.x = this.x - other.x;
-  result.y = this.y - other.y;
-  result.z = this.z - other.z;
+  result.x = A.x - B.x;
+  result.y = A.y - B.y;
+  result.z = A.z - B.z;
   return result:
 }
 
-public V3 Sub_Scalar (float other){
+public V3 V3_Sub_Scalar (V3 A, float B){
   V3 result;
-  result.x = this.x - other;
-  result.y = this.y - other;
-  result.z = this.z - other;
+  result.x = A.x - B;
+  result.y = A.y - B;
+  result.z = A.z - B;
   return result:
 }
 
-public V3 Mul_V3 (V3 other){
+public V3 V3_Mul_V3 (V3 A, V3 B){
   V3 result;
-  result.x = this.x * other.x;
-  result.y = this.y * other.y;
-  result.z = this.z * other.z;
+  result.x = A.x * B.x;
+  result.y = A.y * B.y;
+  result.z = A.z * B.z;
   return result:
 }
 
-public V3 Mul_Scalar (float other){
+public V3 V3_Mul_Scalar (V3 A, float B){
   V3 result;
-  result.x = this.x * other;
-  result.y = this.y * other;
-  result.z = this.z * other;
+  result.x = A.x * B;
+  result.y = A.y * B;
+  result.z = A.z * B;
   return result:
 }
 
-public V3 Div_V3 (V3 other){
+public V3 V3_Div_V3 (V3 A, V3 B){
   V3 result;
-  result.x = this.x / other.x;
-  result.y = this.y / other.y;
-  result.z = this.z / other.z;
+  result.x = A.x / B.x;
+  result.y = A.y / B.y;
+  result.z = A.z / B.z;
   return result:
 }
 
-public V3 Div_Scalar (float other){
+public V3 V3_Div_Scalar (V3 A, float B){
   V3 result;
-  result.x = this.x / other;
-  result.y = this.y / other;
-  result.z = this.z / other;
+  result.x = A.x / B;
+  result.y = A.y / B;
+  result.z = A.z / B;
   return result:
 }
 
-public V3 CrossProduct (V3 other){
+public V3 V3_CrossProduct (V3 A, V3 B){
   V3 result;
-  result.x = this.y*other.z - this.z*other.y;
-  result.y = this.z*other.x - this.x*other.z;
-  result.z = this.x*other.y - this.y*other.x;
+  result.x = A.y*B.z - A.z*B.y;
+  result.y = A.z*B.x - A.x*B.z;
+  result.z = A.x*B.y - A.y*B.x;
   return result;
 }
 
-public float ScalarProduct( V3 other){
+public V3 V3calarProduct(V3 A,  V3 B){
   float result;
-  result = this.x*other.x + this.y*other.y + this.z*other.zM
+  result = A.x*B.x + A.y*B.y + A.z*B.zM
   return result;
 }
 
-public float Length(){
+public float V3_Length(V3 A){
   float result;
-  result = sqrt(this.x^2 + this.y^2 + this.z^2);
+  result = sqrt(A.x^2 + A.y^2 + A.z^2);
   return result;
 }
