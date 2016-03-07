@@ -1,6 +1,6 @@
 #include <Servo/Servo.h>
 #include <String.h>
-#include <V3.h>
+#include <Vector3.h>
 
 #define DEBUG_ENABLED 1
 #define WIFI_SETUP_ENABLED 0
@@ -34,16 +34,16 @@ Servo Motor2;
 Servo Motor3;
 Servo Motor4;
 
-V3 SteeringInput;
+Vector3 SteeringInput(0, 0, 0);
 int t_m1, t_m2, t_m3, t_m4;
 int lasttime;
 int ledblinkcounter, ledblinknum, ledblinkfreq;
 
 bool LED_blinking;
 
-V3 DOF_accel;
-V3 DOF_gyro;
-V3 DOF_mag;
+Vector3 DOF_accel(0, 0, 0);
+Vector3 DOF_gyro(0, 0, 0);
+Vector3 DOF_mag(0, 0, 0);
 
 char WIFI_Net[30];
 char WIFI_IP_Adress[20];
@@ -72,7 +72,7 @@ void setup(){
 #endif
 	Serial_DOF.begin(SERIAL_DOF_BAUD);	//RAZOR IMU
 	Serial_WIFI.begin(SERIAL_WIFI_BAUD);	//WIFI SHIELD
-	pinmode(LED_PIN, Output)
+	pinMode(LED_PIN, OUTPUT);
 #if WIFI_SETUP_ENABLED
 	initWIFI();
 #endif
@@ -163,31 +163,31 @@ void get9DOFData(String data){
 	char * str;
 	data.toCharArray(str, data.length(), 0);
 	str = strtok(str, del);
-	DOF_accel.x = atoi(str);
+	DOF_accel.x(atoi(str));
 	str = strtok(NULL, del);
-	DOF_accel.y = atoi(str);
+	DOF_accel.y( atoi(str));
 	str = strtok(NULL, del);
-	DOF_accel.z = atoi(str);
+	DOF_accel.z( atoi(str));
 	str = strtok(NULL, del);
-	DOF_gyro.x = atoi(str);
+	DOF_gyro.x(atoi(str));
 	str = strtok(NULL, del);
-	DOF_gyro.y = atoi(str);
+	DOF_gyro.y( atoi(str));
 	str = strtok(NULL, del);
-	DOF_gyro.z = atoi(str);
+	DOF_gyro.z( atoi(str));
 	str = strtok(NULL, del);
-	DOF_mag.x = atoi(str);
+	DOF_mag.x(atoi(str));
 	str = strtok(NULL, del);
-	DOF_mag.y = atoi(str);
+	DOF_mag.y(atoi(str));
 	str = strtok(NULL, del);
-	DOF_mag.z = atoi(str);
+	DOF_mag.z( atoi(str));
 }
 
 void SetZero(){
 	DOFRead = "";
 	WIFIRead = "";
-	SteeringInput.x = 0;
-	SteeringInput.y = 0;
-	SteeringInput.z = 0;
+	SteeringInput.x(0); 
+	SteeringInput.y(0);
+	SteeringInput.z(0);
 	t_m1 = 0;
 	t_m2 = 0;
 	t_m3 = 0;
@@ -259,7 +259,7 @@ void wifiSendDATA(String s){
 
 void loop(){
 	unsigned int now = millis();
-
+	DOF_accel.Add_V3(DOF_gyro);
 	SetZero();
 	//Razor IMU 9DOF
 	if (Serial_DOF.available()){
@@ -270,11 +270,11 @@ void loop(){
 	if (Serial_WIFI.available()){
 		WIFIRead = readSerial(SERIAL_WIFI);
 	}
-	if(WIFIRead.findlast("+IPD")){
-		if(WIFIRead.findlast("LED1")){
-			digitalwrite(LED_PIN, HIGH);
+	if(WIFIRead.lastIndexOf("+IPD")){
+		if(WIFIRead.lastIndexOf("LED1")){
+			digitalWrite(LED_PIN, HIGH);
 		}
-		else if(WIFIRead.findlast("LED0")){
+		else if(WIFIRead.lastIndexOf("LED0")){
 			digitalWrite(LED_PIN, LOW);
 		}
 		/*
@@ -292,9 +292,11 @@ void loop(){
 	}
 
 #if DEBUG_ENABLED
-	if (DOFRead.length() > 0 || WIFIRead.length() > 0){
+	if (DOFRead.length() > 0){
 		Serial_DEBUG.println("----DOF----");
 		Serial_DEBUG.println(DOFRead);
+	}
+	if (WIFIRead.length() > 0){
 		Serial_DEBUG.println("----WIFI----");
 		Serial_DEBUG.println(WIFIRead);
 		Serial_DEBUG.print('\n');

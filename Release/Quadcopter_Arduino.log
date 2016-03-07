@@ -1,0 +1,118 @@
+﻿Build started 08.03.2016 00:36:29.
+     1>Project "I:\Dropbox\Quadcopter\Quadcopter_Arduino\Quadcopter_Arduino.vcxproj" on node 2 (Rebuild target(s)).
+     1>ClCompile:
+         I:\Programme (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"I:\Program Files (x86)\Arduino\hardware\arduino\cores\arduino" /I"I:\Program Files (x86)\Arduino\hardware\arduino\variants\mega" /II:\Dropbox\Quadcopter\Quadcopter_Arduino /I"I:\Program Files (x86)\Arduino\libraries\Servo" /I"I:\Program Files (x86)\Arduino\libraries\Servo\utility" /I"I:\Program Files (x86)\Arduino\libraries" /I"I:\Program Files (x86)\Arduino\hardware\arduino\libraries" /I"C:\Program Files (x86)\Visual Micro\Visual Micro for Arduino\Micro Platforms\default\debuggers" /II:\Dropbox\Privat\Programmieren\Microcontroller\Arduino\libraries /I"i:\program files (x86)\arduino\hardware\tools\avr\avr\include\\" /I"i:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\\" /I"i:\program files (x86)\arduino\hardware\tools\avr\avr\\" /I"i:\program files (x86)\arduino\hardware\tools\avr\lib\gcc\avr\4.3.2\include\\" /Zi /nologo /W3 /WX- /sdl /O2 /Oi /Oy- /GL /D CODE_ANALYSIS /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /analyze /analyze:plugin"I:\Programme (x86)\Microsoft Visual Studio 12.0\VC\\bin\localespc.dll" /errorReport:prompt   /analyze:quiet Vector3.cpp
+         Vector3.cpp
+     1>i:\program files (x86)\arduino\hardware\tools\avr\lib\gcc\avr\4.3.2\include\stddef.h(214): error C2371: 'size_t' : redefinition; different basic types
+                 predefined C++ types (compiler internal)(19) : see declaration of 'size_t'
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(106): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(106): error C2065: '__noreturn__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(106): error C2072: 'abort' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(111): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(111): error C2065: '__const__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(111): error C2072: 'abs' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(120): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(120): error C2065: '__const__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(120): error C2072: 'labs' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(152): error C3646: '__asm__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(152): error C2072: 'div' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(152): error C2440: 'initializing' : cannot convert from 'const char [12]' to 'div_t (int,int)'
+                 There are no conversions to function types, although there are conversions to references or pointers to functions
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(152): error C2146: syntax error : missing ';' before identifier '__attribute__'
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(152): error C2065: '__const__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(152): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(158): error C3646: '__asm__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(158): error C2072: 'ldiv' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(158): error C2440: 'initializing' : cannot convert from 'const char [12]' to 'ldiv_t (long,long)'
+                 There are no conversions to function types, although there are conversions to references or pointers to functions
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(158): error C2146: syntax error : missing ';' before identifier '__attribute__'
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(158): error C2065: '__const__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(158): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(158): error C2374: '__attribute__' : redefinition; multiple initialization
+                 i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(152) : see declaration of '__attribute__'
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(254): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(254): error C2065: '__pure__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(254): error C2072: 'atol' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(266): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(266): error C2065: '__pure__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(266): error C2072: 'atoi' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(278): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(278): error C2065: '__noreturn__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(278): error C2072: 'exit' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(290): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(290): error C2065: '__malloc__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(290): error C2072: 'malloc' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(319): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(319): error C2065: '__malloc__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(319): error C2072: 'calloc' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(338): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(338): error C2065: '__malloc__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\stdlib.h(338): error C2072: 'realloc' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(110): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(110): error C2065: '__const__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(110): error C2072: 'ffs' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(111): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(111): error C2065: '__const__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(111): error C2072: 'ffsl' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(112): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(112): error C2065: '__const__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(112): error C2072: 'ffsll' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(114): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(114): error C2065: '__pure__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(114): error C2072: 'memchr' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(115): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(115): error C2065: '__pure__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(115): error C2072: 'memcmp' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(117): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(117): error C2065: '__pure__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(117): error C2072: 'memmem' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(119): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(119): error C2065: '__pure__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(119): error C2072: 'memrchr' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(122): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(122): error C2065: '__pure__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(122): error C2072: 'strchr' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(123): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(123): error C2065: '__pure__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(123): error C2072: 'strchrnul' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(124): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(124): error C2065: '__pure__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(124): error C2072: 'strcmp' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(126): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(126): error C2065: '__pure__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(126): error C2072: 'strcasecmp' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(127): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(127): error C2065: '__pure__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(127): error C2072: 'strcasestr' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(128): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(128): error C2065: '__pure__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(128): error C2072: 'strcspn' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(132): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(132): error C2065: '__pure__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(132): error C2072: 'strlen' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(135): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(135): error C2065: '__pure__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(135): error C2072: 'strncmp' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(137): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(137): error C2065: '__pure__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(137): error C2072: 'strncasecmp' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(138): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(138): error C2065: '__pure__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(138): error C2072: 'strnlen' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(139): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(139): error C2065: '__pure__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(139): error C2072: 'strpbrk' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(140): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(140): error C2065: '__pure__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(140): error C2072: 'strrchr' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(143): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(143): error C2065: '__pure__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(143): error C2072: 'strspn' : initialization of a function
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(144): error C3646: '__attribute__' : unknown override specifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(144): error C2065: '__pure__' : undeclared identifier
+     1>i:\program files (x86)\arduino\hardware\tools\avr\avr\include\string.h(144): fatal error C1003: error count exceeds 100; stopping compilation
+     1>Done Building Project "I:\Dropbox\Quadcopter\Quadcopter_Arduino\Quadcopter_Arduino.vcxproj" (Rebuild target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:00.47
