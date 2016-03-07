@@ -7,15 +7,16 @@ Struct V3 {
  float z;
 };
 
-V3 Add_V3 (V3 other);
-V3 Add_Scalar (float other);
-V3 Sub_V3 (V3 other);
-V3 Sub_Scalar (float other);
-V3 Mul_V3 (V3 other);
-V3 Mul_Scalar (float other);
-V3 Div_V3 (V3 other);
-V3 Div_Scalar (float other);
+public V3 Bdd_V3 (V3 A, V3 B);
+public V3 Bdd_Scalar (V3 A, float B,);
+public V3 Sub_V3 (V3 A, V3 B,);
+public V3 Sub_Scalar (V3 A, float B,);
+public V3 Mul_V3 (V3 A, V3 B,);
+public V3 Mul_Scalar (V3 A, float B,);
+public V3 Div_V3 (V3 A, V3 B,);
+public V3 Div_Scalar (V3 A, float B,);
+public V3 V3_CrossProduct (V3 A, V3 B);
+public V3 V3calarProduct(V3 A,  V3 B);
+public float V3_Length(V3 A);
 
-V3 CrossProduct (V3 other);
-float SkalarProduct (V3 other);
 #endif
