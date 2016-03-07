@@ -1,5 +1,6 @@
 #include <Servo/Servo.h>
 #include <String.h>
+#include <Telemetry.h>
 
 #define DEBUG_ENABLED 1
 #define WIFI_SETUP_ENABLED 0
@@ -33,16 +34,16 @@ Servo Motor2;
 Servo Motor3;
 Servo Motor4;
 
-int x_read, y_read, z_read;
+V3 SteeringInput;
 int t_m1, t_m2, t_m3, t_m4;
 int lasttime;
 int ledblinkcounter, ledblinknum, ledblinkfreq;
 
 bool LED_blinking;
 
-uint16_t x_accel, y_accel, z_accel;
-uint16_t x_gyro, y_gyro, z_gyro;
-uint16_t x_mag, y_mag, z_mag;
+V3 DOF_accel;
+V3 DOF_gyro;
+V3 DOF_mag;
 
 char WIFI_Net[30];
 char WIFI_IP_Adress[20];
@@ -162,31 +163,31 @@ void get9DOFData(String data){
 	char * str;
 	data.toCharArray(str, data.length(), 0);
 	str = strtok(str, del);
-	x_accel = atoi(str);
+	DOF_accel.x = atoi(str);
 	str = strtok(NULL, del);
-	y_accel = atoi(str);
+	DOF_accel.y = atoi(str);
 	str = strtok(NULL, del);
-	z_accel = atoi(str);
+	DOF_accel.z = atoi(str);
 	str = strtok(NULL, del);
-	x_gyro = atoi(str);
+	DOF_gyro.x = atoi(str);
 	str = strtok(NULL, del);
-	y_gyro = atoi(str);
+	DOF_gyro.y = atoi(str);
 	str = strtok(NULL, del);
-	z_gyro = atoi(str);
+	DOF_gyro.z = atoi(str);
 	str = strtok(NULL, del);
-	x_mag = atoi(str);
+	DOF_mag.x = atoi(str);
 	str = strtok(NULL, del);
-	y_mag = atoi(str);
+	DOF_mag.y = atoi(str);
 	str = strtok(NULL, del);
-	z_mag = atoi(str);
+	DOF_mag.z = atoi(str);
 }
 
 void SetZero(){
 	DOFRead = "";
 	WIFIRead = "";
-	x_read = 0;
-	y_read = 0;
-	z_read = 0;
+	SteeringInput.x = 0;
+	SteeringInput.y = 0;
+	SteeringInput.z = 0;
 	t_m1 = 0;
 	t_m2 = 0;
 	t_m3 = 0;
@@ -276,6 +277,18 @@ void loop(){
 		else if(WIFIRead.findlast("LED0")){
 			digitalWrite(LED_PIN, LOW);
 		}
+		/*
+		QUAD-XXX,-YYY,-ZZZ (-255 bis 255)
+		char * del = ",";
+		char * str;
+		data.toCharArray(str, WIFIRead.length(), WIFIRead.find("QUAD"));
+		str = strtok(str, del);
+		SteeringInput.x = atoi(str);
+		str = strtok(str, del);
+		SteeringInput.y = atoi(str);
+		str = strtok(str, del);
+		SteeringInput.z = atoi(str);
+		*/
 	}
 
 #if DEBUG_ENABLED
