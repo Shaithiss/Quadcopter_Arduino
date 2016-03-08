@@ -4,6 +4,7 @@
 
 #define DEBUG_ENABLED 1
 #define WIFI_SETUP_ENABLED 0
+#define DOF_SETUP_ENABLED 0
 
 #define LED_PIN 15
 #define MOTOR1 1
@@ -27,6 +28,7 @@ String readSerial(int i);
 void SerialFlush(int i);
 void SetZero();
 void wifiSend(String s);
+void dofSend(String s);
 void wifiSendDATA(String s);
 
 Servo Motor1;
@@ -34,16 +36,16 @@ Servo Motor2;
 Servo Motor3;
 Servo Motor4;
 
-Vector3 SteeringInput(0, 0, 0);
+Vector3 SteeringInput();
 int t_m1, t_m2, t_m3, t_m4;
 int lasttime;
 int ledblinkcounter, ledblinknum, ledblinkfreq;
 
 bool LED_blinking;
 
-Vector3 DOF_accel(0, 0, 0);
-Vector3 DOF_gyro(0, 0, 0);
-Vector3 DOF_mag(0, 0, 0);
+Vector3 DOF_accel();
+Vector3 DOF_gyro();
+Vector3 DOF_mag();
 
 char WIFI_Net[30];
 char WIFI_IP_Adress[20];
@@ -76,15 +78,18 @@ void setup(){
 #if WIFI_SETUP_ENABLED
 	initWIFI();
 #endif
+#if DOF_SETUP_ENABLED
+	initDOF();
+#endif
 	wifiSend("AT");
 	Serial_DEBUG.println("Init DONE");
 }
 
 void LedBlink(int count, int freq){
-LED_blinking = true; 
-ledblinkcounter = 0; 
-ledblinknum = count;
-ledblinkfreq = freq;
+	LED_blinking = true; 
+	ledblinkcounter = 0; 
+	ledblinknum = count;
+	ledblinkfreq = freq;
 }
 
 int WaitForWIFIResponse(){
@@ -155,13 +160,78 @@ void initWIFI(){
 #endif
 }
 
+void initDOF(){
+	SerialDOF.println("#o0");
+	SerialDOF.println("#osct");
+	SerialDOF.println("#o1");
+}
+/*
+	 "#o<params>" - Set OUTPUT mode and parameters. The available options are:
+Streaming output
+	"#o0" - DISABLE continuous streaming output. Also see #f below.
+	"#o1" - ENABLE continuous streaming output.
+// Angles output
+	"#ob" - Output angles in BINARY format (yaw/pitch/roll as binary float, so one output frame
+	is 3x4 = 12 bytes long).
+	"#ot" - Output angles in TEXT format (Output frames have form like "#YPR=-142.28,-5.38,33.52",
+	followed by carriage return and line feed [\r\n]).
+// Sensor calibration
+	"#oc" - Go to CALIBRATION output mode.
+	"#on" - When in calibration mode, go on to calibrate NEXT sensor.
+// Sensor data output
+	"#osct" - Output CALIBRATED SENSOR data of all 9 axes in TEXT format.
+	One frame consist of three lines - one for each sensor: acc, mag, gyr.
+	"#osrt" - Output RAW SENSOR data of all 9 axes in TEXT format.
+	One frame consist of three lines - one for each sensor: acc, mag, gyr.
+	"#osbt" - Output BOTH raw and calibrated SENSOR data of all 9 axes in TEXT format.
+	One frame consist of six lines - like #osrt and #osct combined (first RAW, then CALIBRATED).
+	NOTE: This is a lot of number-to-text conversion work for the little 8MHz chip on the Razor boards.
+	In fact it's too much and an output frame rate of 50Hz can not be maintained. #osbb.
+	"#oscb" - Output CALIBRATED SENSOR data of all 9 axes in BINARY format.
+	One frame consist of three 3x3 float values = 36 bytes. Order is: acc x/y/z, mag x/y/z, gyr x/y/z.
+	"#osrb" - Output RAW SENSOR data of all 9 axes in BINARY format.
+	One frame consist of three 3x3 float values = 36 bytes. Order is: acc x/y/z, mag x/y/z, gyr x/y/z.
+	"#osbb" - Output BOTH raw and calibrated SENSOR data of all 9 axes in BINARY format.
+	One frame consist of 2x36 = 72 bytes - like #osrb and #oscb combined (first RAW, then CALIBRATED).
+// Error message output
+	"#oe0" - Disable ERROR message output.
+	"#oe1" - Enable ERROR message output.
+	"#f" - Request one output frame - useful when continuous output is disabled and updates are
+	required in larger intervals only. Though #f only requests one reply, replies are still
+	bound to the internal 20ms (50Hz) time raster. So worst case delay that #f can add is 19.99ms.
+	"#s<xy>" - Request synch token - useful to find out where the frame boundaries are in a continuous
+	binary stream or to see if tracker is present and answering. The tracker will send
+	"#SYNCH<xy>\r\n" in response (so it's possible to read using a readLine() function).
+	x and y are two mandatory but arbitrary bytes that can be used to find out which request
+	the answer belongs to.
+*/
 void get9DOFData(String data){
-	if (data[0] != '$'){
+	/*
+	#YPR=-155.73,-76.48,-129.51
+	X axis pointing forward (towards the short edge with the connector holes)
+	Y axis pointing to the right
+	Z axis pointing down 
+	*/
+	if (data[0] != '#'){
 		return;
 	}
-	char * del = ",$#";
+	char * del = ",=";
 	char * str;
+	float yawn;
+	float pitch;
+	float roll;
 	data.toCharArray(str, data.length(), 0);
+	str = strtok(str, del);
+	str = strtok(str, del);
+	Steeringinput.x(atof(str));
+	yawn = atof(str);
+	str = strtok(str, del);
+	Steeringinput.y(atof(str));
+	pitch = atof(str);
+	str = strtok(str, del);
+	Steeringinput.z(atof(str));
+	roll = atof(str);
+	/*
 	str = strtok(str, del);
 	DOF_accel.x(atoi(str));
 	str = strtok(NULL, del);
@@ -180,6 +250,7 @@ void get9DOFData(String data){
 	DOF_mag.y(atoi(str));
 	str = strtok(NULL, del);
 	DOF_mag.z( atoi(str));
+	*/
 }
 
 void SetZero(){
@@ -246,6 +317,15 @@ void wifiSend(String s){
 	}
 }
 
+void dofSend(String s){
+	if(s.length() > 0){
+#if DEBUG_ENABLED
+		Serial_DEBUG.println(s);
+#endif
+		Serial_DOF.println(s);
+	}
+}
+
 void wifiSendDATA(String s){
 	if (s.length() >0) {
 		s += "\r";
@@ -307,13 +387,15 @@ void loop(){
 		char c;
 		delay(200);
 		while (Serial_DEBUG.available()) {
-			if (Serial_DEBUG.available() > 0) {
-				c = Serial_DEBUG.read();
-				if (c != '\n')
-					s += c;
+			c = Serial_DEBUG.read();
+			if (c != '\n')
+				s += c;
 			}
 		}
-		wifiSend(s);
+		if(s[0] == '#')
+			dofSend(s);
+		else
+			wifiSend(s);
 
 	}
 #endif
