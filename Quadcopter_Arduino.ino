@@ -41,9 +41,10 @@ int lasttime;
 int ledblinkcounter, ledblinknum, ledblinkfreq;
 
 float[3] YPR = {};
-int[3] DOF_accel = {};
-int[3] DOF_gyro = {}; 
-int[3] DOF_mag = {};
+float[3] DOF_accel = {};
+float[3] DOF_gyro = {}; 
+float[3] DOF_mag = {};
+int[3] Input = {};
 
 bool LED_blinking;
 bool YPR_enabled = false;
@@ -219,7 +220,6 @@ void get9DOFData(String data){
 	"#A-C=000.00,000.00,000.00\r\n"
 	"#M-C=000.00,000.00,000.00\r\n"
 	"#G-C=000.00,000.00,000.00\r\n"
-
 	*/
 	
 	char * str;
@@ -272,18 +272,6 @@ void get9DOFData(String data){
 	}
 }
 
-void SetZero(){
-	DOFRead = "";
-	WIFIRead = "";
-	SteeringInput.x(0); 
-	SteeringInput.y(0);
-	SteeringInput.z(0);
-	t_m1 = 0;
-	t_m2 = 0;
-	t_m3 = 0;
-	t_m4 = 0;
-}
-
 void SerialFlush(int i){
 	switch (i)
 	{
@@ -296,11 +284,11 @@ void SerialFlush(int i){
 }
 
 String readSerial(int i){
-	delay(200);
 	char c;
 	String readString = "";
 	String result = "";
 	if (i == SERIAL_WIFI){
+		delay(100);
 		while (Serial_WIFI.available()) {
 			if (Serial_WIFI.available() >0) {
 				c = Serial_WIFI.read();
@@ -358,8 +346,6 @@ void wifiSendDATA(String s){
 
 void loop(){
 	unsigned int now = millis();
-	DOF_accel.Add_V3(DOF_gyro);
-	SetZero();
 	//Razor IMU 9DOF
 	if (Serial_DOF.available()){
 		DOFRead = readSerial(SERIAL_DOF);
@@ -376,18 +362,18 @@ void loop(){
 		else if(WIFIRead.lastIndexOf("LED0")){
 			digitalWrite(LED_PIN, LOW);
 		}
-		/*
-		QUAD-XXX,-YYY,-ZZZ (-255 bis 255)
-		char * del = ",";
+		//Q=-XXX,-YYY,-ZZZ (-255 bis 255)
+	} 
+	else if(WIFIRead.lastIndexOf("Q=")) {
+		char * del = ":,";
 		char * str;
-		data.toCharArray(str, WIFIRead.length(), WIFIRead.find("QUAD"));
+		WIFIRead.toCharArray(str, WIFIRead.length(), 0);
 		str = strtok(str, del);
-		SteeringInput.x = atoi(str);
-		str = strtok(str, del);
-		SteeringInput.y = atoi(str);
-		str = strtok(str, del);
-		SteeringInput.z = atoi(str);
-		*/
+		Input[0] = atoi(str);
+		str = strtok(NULL, del);
+		Input[1] = atoi(str);
+		str = strtok(NULL, del);
+		Input[2] = atoi(str);
 	}
 
 #if DEBUG_ENABLED
@@ -404,7 +390,6 @@ void loop(){
 	if (Serial_DEBUG.available()){
 		String s = "";
 		char c;
-		delay(200);
 		while (Serial_DEBUG.available()) {
 			c = Serial_DEBUG.read();
 			if (c != '\n')
@@ -418,12 +403,12 @@ void loop(){
 
 	}
 #endif
-
+/*
 	Motor1.write(t_m1);
 	Motor2.write(t_m2);
 	Motor3.write(t_m3);
 	Motor4.write(t_m4);
-
+*/
 	if (LED_blinking && ledblinkcounter < ledblinknum){
 		if (now > lasttime + ledblinkfreq){
 			lasttime = now;
