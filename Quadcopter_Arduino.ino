@@ -59,7 +59,7 @@ HardwareSerial Serial_DEBUG = Serial;
 HardwareSerial Serial_DOF = Serial1;
 HardwareSerial Serial_WIFI = Serial2;
 
-String WIFI_SSID = "ESP8266";
+String WIFI_SSID = "ESP8266"; 
 String WIFI_PW = "12345678";
 String WIFI_CHANNEL = "1";
 String WIFI_SECURITY = "3";
