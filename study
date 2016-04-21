@@ -27,4 +27,11 @@ mcrossr = m2, m3
 -z : -mcross1, -mcross2
 
 richtungswechsel:
-+x : +mback -> 
++x : +mback  -> gyro.x(max)
+-x : +mfront -> gyro.x(min)
++y : +mleft  -> gyro.y(max)
+-y : +mright -> gyro.y(min)
++z : +mcross1, +mcross2 -> acc.z(max)
+-z : -mcross1, -mcross2 -> acc.z(min)
+pitch right : -mcross1, +mcross2
+pitch left  : +mcross1, -mcross2
