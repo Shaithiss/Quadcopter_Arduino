@@ -36,16 +36,17 @@ Servo Motor2;
 Servo Motor3;
 Servo Motor4;
 
-Vector3 SteeringInput();
 int t_m1, t_m2, t_m3, t_m4;
 int lasttime;
 int ledblinkcounter, ledblinknum, ledblinkfreq;
 
-bool LED_blinking;
+float[3] YPR = {};
+int[3] DOF_accel = {};
+int[3] DOF_gyro = {}; 
+int[3] DOF_mag = {};
 
-Vector3 DOF_accel();
-Vector3 DOF_gyro();
-Vector3 DOF_mag();
+bool LED_blinking;
+bool YPR_enabled = false;
 
 char WIFI_Net[30];
 char WIFI_IP_Adress[20];
@@ -82,7 +83,9 @@ void setup(){
 	initDOF();
 #endif
 	wifiSend("AT");
+#if DEBUG_ENABLED
 	Serial_DEBUG.println("Init DONE");
+#endif
 }
 
 void LedBlink(int count, int freq){
@@ -206,51 +209,67 @@ Streaming output
 	the answer belongs to.
 */
 void get9DOFData(String data){
+	
 	/*
 	#YPR=-155.73,-76.48,-129.51
 	X axis pointing forward (towards the short edge with the connector holes)
 	Y axis pointing to the right
 	Z axis pointing down 
+	
+	"#A-C=000.00,000.00,000.00\r\n"
+	"#M-C=000.00,000.00,000.00\r\n"
+	"#G-C=000.00,000.00,000.00\r\n"
+
 	*/
-	if (data[0] != '#'){
+	
+	char * str;
+	char * del = ",=";
+	data.toCharArray(str, data.length(), 0);
+	if (str[0] != '#'){
 		return;
 	}
-	char * del = ",=";
-	char * str;
-	float yawn;
-	float pitch;
-	float roll;
-	data.toCharArray(str, data.length(), 0);
-	str = strtok(str, del);
-	str = strtok(str, del);
-	Steeringinput.x(atof(str));
-	yawn = atof(str);
-	str = strtok(str, del);
-	Steeringinput.y(atof(str));
-	pitch = atof(str);
-	str = strtok(str, del);
-	Steeringinput.z(atof(str));
-	roll = atof(str);
-	/*
-	str = strtok(str, del);
-	DOF_accel.x(atoi(str));
-	str = strtok(NULL, del);
-	DOF_accel.y( atoi(str));
-	str = strtok(NULL, del);
-	DOF_accel.z( atoi(str));
-	str = strtok(NULL, del);
-	DOF_gyro.x(atoi(str));
-	str = strtok(NULL, del);
-	DOF_gyro.y( atoi(str));
-	str = strtok(NULL, del);
-	DOF_gyro.z( atoi(str));
-	str = strtok(NULL, del);
-	DOF_mag.x(atoi(str));
-	str = strtok(NULL, del);
-	DOF_mag.y(atoi(str));
-	str = strtok(NULL, del);
-	DOF_mag.z( atoi(str));
-	*/
+	if(str[1] == 'Y'){
+		str = strtok(str, del);
+		YPR[0] = atof(str);
+		str = strtok(str, del);
+		YPR[1] = atof(str);
+		str = strtok(str, del);
+		YPR[2] = atof(str);
+	} 
+	else {
+		switch(str[1]){
+			case 'A'{
+				str = strtok(str, del);
+				str = strtok(NULL, del);
+				DOF_accel[0] = atof(str);
+				str = strtok(NULL, del);
+				DOF_accel[1] = atof(str);
+				str = strtok(NULL, del);
+				DOF_accel[2] = atof(str);
+				break;
+			}
+			case 'M'{
+				str = strtok(str, del);
+				str = strtok(NULL, del);
+				DOF_mag[0] = atof(str);
+				str = strtok(NULL, del);
+				DOF_mag[1] = atof(str);
+				str = strtok(NULL, del);
+				DOF_mag[2] = atof(str);
+				break;
+			}
+			case 'G'{
+				str = strtok(str, del);
+				str = strtok(NULL, del);
+				DOF_gyro[0] = atof(str);
+				str = strtok(NULL, del);
+				DOF_gyro[1] = atof(str);
+				str = strtok(NULL, del);
+				DOF_gyro[2] = atof(str);
+				break;
+			}
+		}
+	}
 }
 
 void SetZero(){
