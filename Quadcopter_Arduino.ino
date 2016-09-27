@@ -1,9 +1,9 @@
 //============================================================================
-// Name        : Quad.cpp
-// Author      : rsommer
-// Version     :
-// Copyright   : Your copyright notice
-// Description : Hello World in C++, Ansi-style
+// Name        : Quadcopter_Arduino.ini
+// Author      : Raffael Sommer
+// Version     : 0.1
+// Copyright   : None
+// Description : Arduinosteuerung für den Quadcopter
 //============================================================================
 
 #include <Servo/Servo.h>
