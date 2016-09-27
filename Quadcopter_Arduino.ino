@@ -1,6 +1,16 @@
+//============================================================================
+// Name        : Quad.cpp
+// Author      : rsommer
+// Version     :
+// Copyright   : Your copyright notice
+// Description : Hello World in C++, Ansi-style
+//============================================================================
+
 #include <Servo/Servo.h>
 #include <String.h>
 #include <Vector3.h>
+#include <math.h>
+
 
 #define DEBUG_ENABLED 1
 #define WIFI_SETUP_ENABLED 0
@@ -40,11 +50,17 @@ int t_m1, t_m2, t_m3, t_m4;
 int lasttime;
 int ledblinkcounter, ledblinknum, ledblinkfreq;
 
-float[3] YPR = {};
-float[3] DOF_accel = {};
-float[3] DOF_gyro = {}; 
-float[3] DOF_mag = {};
-int[3] Input = {};
+struct V3 {
+	float x;
+	float y;
+	float z;
+};
+
+V3 YPR = {};
+V3 DOF_accel = {};
+V3 DOF_gyro = {}; 
+V3 DOF_mag = {};
+V3 Input = {};
 
 bool LED_blinking;
 bool YPR_enabled = false;
@@ -87,6 +103,20 @@ void setup(){
 #if DEBUG_ENABLED
 	Serial_DEBUG.println("Init DONE");
 #endif
+}
+
+float V3Length (V3 E){
+	float Result = sqrt(E[0]^2 + E[1]^2 + E[2]^2);
+	return Result;
+}
+
+V3 V3Normalize(V3* E){
+	float Length = V3Length(*E);
+	V3 Result;
+	Result.x = E->x / Length;
+	Result.y = E->y / Length;
+	Result.z = E->z / Length;
+	return Result;
 }
 
 void LedBlink(int count, int freq){
@@ -230,42 +260,42 @@ void get9DOFData(String data){
 	}
 	if(str[1] == 'Y'){
 		str = strtok(str, del);
-		YPR[0] = atof(str);
+		YPR.x = atof(str);
 		str = strtok(str, del);
-		YPR[1] = atof(str);
+		YPR.y = atof(str);
 		str = strtok(str, del);
-		YPR[2] = atof(str);
+		YPR.z = atof(str);
 	} 
 	else {
 		switch(str[1]){
 			case 'A'{
 				str = strtok(str, del);
 				str = strtok(NULL, del);
-				DOF_accel[0] = atof(str);
+				DOF_accel.x = atof(str);
 				str = strtok(NULL, del);
-				DOF_accel[1] = atof(str);
+				DOF_accel.y = atof(str);
 				str = strtok(NULL, del);
-				DOF_accel[2] = atof(str);
+				DOF_accel.z = atof(str);
 				break;
 			}
 			case 'M'{
 				str = strtok(str, del);
 				str = strtok(NULL, del);
-				DOF_mag[0] = atof(str);
+				DOF_mag.x = atof(str);
 				str = strtok(NULL, del);
-				DOF_mag[1] = atof(str);
+				DOF_mag.y = atof(str);
 				str = strtok(NULL, del);
-				DOF_mag[2] = atof(str);
+				DOF_mag.z = atof(str);
 				break;
 			}
 			case 'G'{
 				str = strtok(str, del);
 				str = strtok(NULL, del);
-				DOF_gyro[0] = atof(str);
+				DOF_gyro.x = atof(str);
 				str = strtok(NULL, del);
-				DOF_gyro[1] = atof(str);
+				DOF_gyro.y = atof(str);
 				str = strtok(NULL, del);
-				DOF_gyro[2] = atof(str);
+				DOF_gyro.z = atof(str);
 				break;
 			}
 		}
@@ -369,11 +399,11 @@ void loop(){
 		char * str;
 		WIFIRead.toCharArray(str, WIFIRead.length(), 0);
 		str = strtok(str, del);
-		Input[0] = atoi(str);
+		Input.x = atoi(str);
 		str = strtok(NULL, del);
-		Input[1] = atoi(str);
+		Input.y = atoi(str);
 		str = strtok(NULL, del);
-		Input[2] = atoi(str);
+		Input.z = atoi(str);
 	}
 
 #if DEBUG_ENABLED
@@ -403,12 +433,19 @@ void loop(){
 
 	}
 #endif
+//
+//Output
+//
 /*
 	Motor1.write(t_m1);
 	Motor2.write(t_m2);
 	Motor3.write(t_m3);
 	Motor4.write(t_m4);
 */
+//
+//Stabilisieren
+//
+
 	if (LED_blinking && ledblinkcounter < ledblinknum){
 		if (now > lasttime + ledblinkfreq){
 			lasttime = now;
