@@ -105,20 +105,29 @@ void setup(){
 #endif
 }
 
-float V3Length (V3 E){
-	float Result = sqrt(E[0]^2 + E[1]^2 + E[2]^2);
+float V3Length (V3 *E){
+	float Result = sqrt(E->x^2 + E->y^2 + E->z^2);
 	return Result;
 }
 
-V3 V3Normalize(V3* E){
+V3 V3Normalize(V3 *E){
 	float Length = V3Length(*E);
-	V3 Result;
+	V3 Result = {};
 	Result.x = E->x / Length;
 	Result.y = E->y / Length;
 	Result.z = E->z / Length;
 	return Result;
 }
 
+
+V3 V3ADD(V3 *E){
+	
+	V3 Result = {};
+	Result.x = E->x / Length;
+	Result.y = E->y / Length;
+	Result.z = E->z / Length;
+	return Result;
+}
 void LedBlink(int count, int freq){
 	LED_blinking = true; 
 	ledblinkcounter = 0; 
