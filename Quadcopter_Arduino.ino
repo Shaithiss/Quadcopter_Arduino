@@ -1,10 +1,10 @@
 #include <Servo/Servo.h>
 #include <String.h>
-#include <Vector3.h>
+//#include <Vector3.h>
 
 #define DEBUG_ENABLED 1
-#define WIFI_SETUP_ENABLED 0
-#define DOF_SETUP_ENABLED 0
+#define WIFI_SETUP_ENABLED 1
+#define DOF_SETUP_ENABLED 1
 
 #define LED_PIN 15
 #define MOTOR1 1
@@ -17,11 +17,10 @@
 #define SERIAL_WIFI 2
 
 #define SERIAL_DEBUG_BAUD 9600
-#define SERIAL_DOF_BAUD 115200 //57600
+#define SERIAL_DOF_BAUD 57600 //115200
 #define SERIAL_WIFI_BAUD 9600
 
 void get9DOFData(String data);
-String GetWIFISetupString();
 void initWIFI();
 void LedBlink(int count, int freq);
 String readSerial(int i);
@@ -29,36 +28,39 @@ void SerialFlush(int i);
 void SetZero();
 void wifiSend(String s);
 void dofSend(String s);
+void serialSend(String s);
 void wifiSendDATA(String s);
+void initDOF();
 
 Servo Motor1;
 Servo Motor2;
 Servo Motor3;
 Servo Motor4;
 
-Vector3 SteeringInput();
+//Vector3 SteeringInput();
 int t_m1, t_m2, t_m3, t_m4;
 int lasttime;
 int ledblinkcounter, ledblinknum, ledblinkfreq;
 
 bool LED_blinking;
 
-Vector3 DOF_accel();
-Vector3 DOF_gyro();
-Vector3 DOF_mag();
+//Vector3 DOF_accel();
+//Vector3 DOF_gyro();
+//Vector3 DOF_mag();
 
 char WIFI_Net[30];
 char WIFI_IP_Adress[20];
 
 String DOFRead;
 String WIFIRead;
+String DEBUGRead;
 
 HardwareSerial Serial_DEBUG = Serial;
 HardwareSerial Serial_DOF = Serial1;
 HardwareSerial Serial_WIFI = Serial2;
 
 String WIFI_SSID = "ESP8266";
-String WIFI_PW = "12345678";
+String WIFI_PW = "vJ$e&5O;/%@LEXFs";
 String WIFI_CHANNEL = "1";
 String WIFI_SECURITY = "3";
 
@@ -158,12 +160,14 @@ void initWIFI(){
 	Serial_DEBUG.print("IP: ");
 	Serial_DEBUG.println(WIFI_IP_Adress);
 #endif
+
 }
 
 void initDOF(){
-	SerialDOF.println("#o0");
-	SerialDOF.println("#osct");
-	SerialDOF.println("#o1");
+	
+	Serial_DOF.println("#o0");
+	Serial_DOF.println("#osct");
+	Serial_DOF.println("#o1");
 }
 /*
 	 "#o<params>" - Set OUTPUT mode and parameters. The available options are:
@@ -223,13 +227,13 @@ void get9DOFData(String data){
 	data.toCharArray(str, data.length(), 0);
 	str = strtok(str, del);
 	str = strtok(str, del);
-	Steeringinput.x(atof(str));
+	//SteeringInput.x(atof(str));
 	yawn = atof(str);
 	str = strtok(str, del);
-	Steeringinput.y(atof(str));
+	//SteeringInput.y(atof(str));
 	pitch = atof(str);
 	str = strtok(str, del);
-	Steeringinput.z(atof(str));
+	//SteeringInput.z(atof(str));
 	roll = atof(str);
 	/*
 	str = strtok(str, del);
@@ -256,9 +260,9 @@ void get9DOFData(String data){
 void SetZero(){
 	DOFRead = "";
 	WIFIRead = "";
-	SteeringInput.x(0); 
-	SteeringInput.y(0);
-	SteeringInput.z(0);
+	//SteeringInput.x(0); 
+	//SteeringInput.y(0);
+	//SteeringInput.z(0);
 	t_m1 = 0;
 	t_m2 = 0;
 	t_m3 = 0;
@@ -277,16 +281,13 @@ void SerialFlush(int i){
 }
 
 String readSerial(int i){
-	delay(200);
 	char c;
 	String readString = "";
 	String result = "";
 	if (i == SERIAL_WIFI){
 		while (Serial_WIFI.available()) {
-			if (Serial_WIFI.available() >0) {
-				c = Serial_WIFI.read();
-				readString += c;
-			}
+			c = Serial_WIFI.read();
+			readString += c;
 		}
 		if (readString.length() >0) {
 			result = readString;
@@ -295,10 +296,18 @@ String readSerial(int i){
 	}
 	else if (i == SERIAL_DOF){
 		while (Serial_DOF.available()) {
-			if (Serial_DOF.available() >0) {
-				c = Serial_DOF.read();
-				readString += c;
-			}
+			c = Serial_DOF.read();
+			readString += c;
+		}
+		if (readString.length() >0) {
+			result = readString;
+			readString = "";
+		}
+	}
+	else if (i == SERIAL_DEBUG) {
+		while (Serial_DEBUG.available()) {
+			c = Serial_DEBUG.read();
+			readString += c;
 		}
 		if (readString.length() >0) {
 			result = readString;
@@ -308,10 +317,14 @@ String readSerial(int i){
 	return result;
 }
 
+void serialSend(String s) {
+	Serial_DEBUG.println(s);
+}
+
 void wifiSend(String s){
 	if (s.length() > 0){
 #if DEBUG_ENABLED
-		Serial_DEBUG.println(s);
+		Serial_DEBUG.println("\nwifi:" + s);
 #endif
 		Serial_WIFI.println(s);
 	}
@@ -320,7 +333,7 @@ void wifiSend(String s){
 void dofSend(String s){
 	if(s.length() > 0){
 #if DEBUG_ENABLED
-		Serial_DEBUG.println(s);
+		Serial_DEBUG.println("\ndof:" + s);
 #endif
 		Serial_DOF.println(s);
 	}
@@ -339,25 +352,27 @@ void wifiSendDATA(String s){
 
 void loop(){
 	unsigned int now = millis();
-	DOF_accel.Add_V3(DOF_gyro);
+	//DOF_accel.Add_V3(DOF_gyro);
 	SetZero();
 	//Razor IMU 9DOF
 	if (Serial_DOF.available()){
-		DOFRead = readSerial(SERIAL_DOF);
-		get9DOFData(DOFRead);
+		DOFRead += readSerial(SERIAL_DOF);
+		//get9DOFData(DOFRead);
 	}
 	//ESP8266
 	if (Serial_WIFI.available()){
-		WIFIRead = readSerial(SERIAL_WIFI);
+		WIFIRead += readSerial(SERIAL_WIFI);
 	}
-	if(WIFIRead.lastIndexOf("+IPD")){
+	if (Serial_DEBUG.available()) {
+		DEBUGRead += readSerial(SERIAL_DEBUG);
+	}
+	/*if(WIFIRead.lastIndexOf("+IPD")){
 		if(WIFIRead.lastIndexOf("LED1")){
 			digitalWrite(LED_PIN, HIGH);
 		}
 		else if(WIFIRead.lastIndexOf("LED0")){
 			digitalWrite(LED_PIN, LOW);
 		}
-		/*
 		QUAD-XXX,-YYY,-ZZZ (-255 bis 255)
 		char * del = ",";
 		char * str;
@@ -368,38 +383,28 @@ void loop(){
 		SteeringInput.y = atoi(str);
 		str = strtok(str, del);
 		SteeringInput.z = atoi(str);
-		*/
-	}
-
+		
+	}*/
 #if DEBUG_ENABLED
-	if (DOFRead.length() > 0){
+	if (DOFRead.length() > 0 && !Serial_DOF.available()){
 		Serial_DEBUG.println("----DOF----");
 		Serial_DEBUG.println(DOFRead);
 	}
-	if (WIFIRead.length() > 0){
+	if (WIFIRead.length() > 0 && !Serial_WIFI.available()){
 		Serial_DEBUG.println("----WIFI----");
 		Serial_DEBUG.println(WIFIRead);
-		Serial_DEBUG.print('\n');
 	}
-
-	if (Serial_DEBUG.available()){
-		String s = "";
-		char c;
-		delay(200);
-		while (Serial_DEBUG.available()) {
-			c = Serial_DEBUG.read();
-			if (c != '\n')
-				s += c;
-			}
+	if (DEBUGRead.length() > 0 && !Serial_DEBUG.available()){
+		if (DEBUGRead.endsWith("\r\n")) {
+			if (DEBUGRead[0] == '#')
+				dofSend(DEBUGRead);
+			else
+				wifiSend(DEBUGRead);
+			DEBUGRead = "";
 		}
-		if(s[0] == '#')
-			dofSend(s);
-		else
-			wifiSend(s);
-
 	}
 #endif
-
+/*
 	Motor1.write(t_m1);
 	Motor2.write(t_m2);
 	Motor3.write(t_m3);
@@ -416,5 +421,5 @@ void loop(){
 			LED_blinking = false;
 		}
 
-	}
+	}*/
 }
