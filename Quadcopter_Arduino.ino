@@ -1,3 +1,11 @@
+//============================================================================
+// Name        : Quadcopter_Arduino.ini
+// Author      : Raffael Sommer
+// Version     : 0.1
+// Copyright   : None
+// Description : Arduinosteuerung für den Quadcopter
+//============================================================================
+
 #include <Servo/Servo.h>
 #include <String.h>
 //#include <Vector3.h>
