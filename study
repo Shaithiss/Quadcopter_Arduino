@@ -1,0 +1,37 @@
+x y z
+
+Schwebeflug : acc = 0 0 0 / ypr = 0 0 0
+acc.+x : korrektur.-x -> acc.x 0
+acc.-x : korrektur.+x -> acc.x 0
+acc.+y : korrektur.-y -> acc.x 0
+acc.-y : korrektur.+y -> acc.x 0
+acc.+z : korrektur.-z -> acc.x 0
+acc.-z : korrektur.+z -> acc.x 0
+
+korrektur:
+m1	m2
+m3	m4
+
+mfront = m1, m2
+mback = m3, m4
+mleft = m1, m3
+mright = m2, m4
+mcrossl = m1, m4
+mcrossr = m2, m3
+
++x : -mfront, +mback
+-x : +mfront, -mback
++y : -mright, +mleft
+-y : +mright, -mleft
++z : +mcross1, +mcross2
+-z : -mcross1, -mcross2
+
+richtungswechsel:
++x : +mback  -> gyro.x(max)
+-x : +mfront -> gyro.x(min)
++y : +mleft  -> gyro.y(max)
+-y : +mright -> gyro.y(min)
++z : +mcross1, +mcross2 -> acc.z(max)
+-z : -mcross1, -mcross2 -> acc.z(min)
+pitch right : -mcross1, +mcross2
+pitch left  : +mcross1, -mcross2
